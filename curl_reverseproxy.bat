@@ -1,0 +1,1 @@
+curl https://localhost:5001/city/locations?city=cit_Ececuq

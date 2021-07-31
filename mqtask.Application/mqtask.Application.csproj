@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\mqtask.Domain\mqtask.Domain.csproj" />
+    <ProjectReference Include="..\mqtask.Persistence.Interfaces\mqtask.Persistence.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>
