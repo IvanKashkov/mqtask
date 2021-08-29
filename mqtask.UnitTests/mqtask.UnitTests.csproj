@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\mqtask.Application\mqtask.Application.csproj" />
     <ProjectReference Include="..\mqtask.Persistence\mqtask.Persistence.csproj" />
   </ItemGroup>
 

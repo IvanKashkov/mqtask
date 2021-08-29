@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace mqtask.Domain
+namespace mqtask.Domain.Services
 {
     public static class IpConverter
     {

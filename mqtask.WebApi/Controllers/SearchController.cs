@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using mqtask.Application;
-using mqtask.Domain;
+using mqtask.Application.Queries;
+using mqtask.Domain.Entities;
 
 namespace mqtask.WebApi.Controllers
 {
@@ -12,8 +14,8 @@ namespace mqtask.WebApi.Controllers
         [ResponseCache(NoStore = false, Location = ResponseCacheLocation.Any, Duration = 3600)]
         public ActionResult GetLocationsByIp([FromQuery(Name = "ip")] string ip)
         {
-            var result = LocationByIpFinder.Find(DbSnapshotHolder.Instance, ip);
-            return Content(result, "application/json");
+            Location result = LocationByIpFinder.Find(DbSnapshotHolder.Instance, ip);
+            return Ok(result);
         }
 
         [HttpGet]
@@ -21,8 +23,8 @@ namespace mqtask.WebApi.Controllers
         [ResponseCache(NoStore = false, Location = ResponseCacheLocation.Any, Duration = 3600)]
         public ActionResult GetLocationsByCity([FromQuery(Name = "city")] string city)
         {
-            var result = LocationsByCityFinder.Find(DbSnapshotHolder.Instance, city);
-            return Content(result, "application/json");
+            List<Location> result = LocationsByCityFinder.Find(DbSnapshotHolder.Instance, city);
+            return Ok(result);
         }
     }
 }

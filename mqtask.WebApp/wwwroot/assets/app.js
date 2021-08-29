@@ -11,14 +11,14 @@ function findByIp() {
             'Content-Encoding': 'gzip'
         }
     })
-        .then(response => response.json())
-        .then(function (data) {
-            document.getElementById("by-ip-content-result").innerHTML = buildTable([data]);
-        })
-        .catch(error => {
-            alert(error.message);
-            console.log(error);
-        });
+    .then(response => response.json())
+    .then(function (data) {
+        document.getElementById("by-ip-content-result").innerHTML = buildTable([data]);
+    })
+    .catch(error => {
+        alert(error.message);
+        console.log(error);
+    });
 }
 
 function findByCity() {
@@ -32,20 +32,22 @@ function findByCity() {
             'Content-Encoding': 'gzip'
         }
     })
-        .then(response => response.json())
-        .then(function (data) {
-            document.getElementById("by-city-content-result").innerHTML = buildTable(data);
-        }).catch(error => {
-            alert(error.message);
-            console.log(error);
-        });
+    .then(response => response.json())
+    .then(function (data) {
+        document.getElementById("by-city-content-result").innerHTML = buildTable(data);
+    }).catch(error => {
+        alert(error.message);
+        console.log(error);
+    });
 }
 
 function buildTable(locations) {
     let rows = "";
 
-    for (let location of locations) {
-        rows += buildTr(location);
+    if (locations) {
+        for (let location of locations) {
+            rows += buildTr(location);
+        }
     }
 
     return `<table class="table">
@@ -56,7 +58,7 @@ function buildTable(locations) {
 <th scope="col">City</th>
 <th scope="col">Region</th>
 <th scope="col">Country</th>
-<th scope="col">Lattitude</th>
+<th scope="col">Latitude</th>
 <th scope="col">Longitude</th>
 </tr>
 </thead>
@@ -71,7 +73,7 @@ function buildTr(location) {
 <td>${location.City}</td>
 <td>${location.Region}</td>
 <td>${location.Country}</td>
-<td>${location.Lattitude}</td>
+<td>${location.Latitude}</td>
 <td>${location.Longitude}</td>
 </tr>`;
 }

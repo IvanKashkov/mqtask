@@ -1,0 +1,1 @@
+curl https://localhost:5003/ip/location?ip=114.64.39.216

@@ -6,18 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO.Compression;
 using mqtask.Application;
-using mqtask.Domain;
 using Microsoft.AspNetCore.ResponseCompression;
+using mqtask.Application.Queries;
 
 namespace mqtask.WebApi
 {
     public class Startup
     {
-        /// <summary>
-        /// This is just a flag for switching possible solutions
-        /// </summary>
-        private static bool UseControllersWithResponseCaching = false;
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -51,12 +46,6 @@ namespace mqtask.WebApi
             {
                 options.Level = CompressionLevel.Fastest;
             });
-
-            if (UseControllersWithResponseCaching)
-            {
-                services.AddResponseCaching();
-                services.AddControllers();
-            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,56 +53,28 @@ namespace mqtask.WebApi
         {
             app.UseCors("Default");
             app.UseResponseCompression();
-
-            if (!UseControllersWithResponseCaching)
+            
+            app.Map("/ip/location", x =>
             {
-                app.Map("/ip/location", x =>
+                x.Run(context =>
                 {
-                    x.Run(context =>
-                    {
-                        string ip = context.Request.Query["ip"];
-                        var result = LocationByIpFinder.Find(DbSnapshotHolder.Instance, ip);
-                        context.Response.ContentType = "application/json";
-                        return context.Response.WriteAsync(result);
-                    });
+                    string ip = context.Request.Query["ip"];
+                    var result = LocationByIpFinder.Find(DbSnapshotHolder.Instance, ip);
+                    context.Response.ContentType = "application/json";
+                    return context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(result));
                 });
+            });
 
-                app.Map("/city/locations", x =>
-                {
-                    x.Run(context =>
-                    {
-                        string city = context.Request.Query["city"];
-                        var result = LocationsByCityFinder.Find(DbSnapshotHolder.Instance, city);
-                        context.Response.ContentType = "application/json";
-                        return context.Response.WriteAsync(result);
-                    });
-                });
-            }
-
-            if (UseControllersWithResponseCaching)
+            app.Map("/city/locations", x =>
             {
-                app.UseRouting();
-                app.UseResponseCaching();
-
-                app.Use(async (context, next) =>
+                x.Run(context =>
                 {
-                    context.Response.GetTypedHeaders().CacheControl =
-                        new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
-                        {
-                            Public = true,
-                            MaxAge = TimeSpan.FromSeconds(3600)
-                        };
-                    context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =
-                        new string[] { "Accept-Encoding" };
-
-                    await next();
+                    string city = context.Request.Query["city"];
+                    var result = LocationsByCityFinder.Find(DbSnapshotHolder.Instance, city);
+                    context.Response.ContentType = "application/json";
+                    return context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(result));
                 });
-
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapControllers();
-                });
-            }
+            });
         }
     }
 }

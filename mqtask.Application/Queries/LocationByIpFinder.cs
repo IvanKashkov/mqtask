@@ -1,10 +1,12 @@
 ﻿using mqtask.Domain.Entities;
+using mqtask.Domain.Services;
+using LocationInfoUpdater = mqtask.Application.Commands.LocationInfoUpdater;
 
-namespace mqtask.Domain
+namespace mqtask.Application.Queries
 {
     public class LocationByIpFinder
     {
-        public static string Find(DbSnapshot dbSnapshot, string ip)
+        public static Location Find(DbSnapshot dbSnapshot, string ip)
         {
             var value = IpConverter.ConvertFromIpAddressToInteger(ip);
             var arr = dbSnapshot.IpRanges;
@@ -13,7 +15,12 @@ namespace mqtask.Domain
 
             if (range != null)
             {
-                return dbSnapshot.LocationsJson[dbSnapshot.LocationIndexes[range.LocationIndex]];
+                uint locationIndex = dbSnapshot.LocationIndexes[range.LocationIndex];
+                Location result = dbSnapshot.Locations[locationIndex];
+
+                LocationInfoUpdater.Update(result, dbSnapshot);
+
+                return result;
             }
 
             return null;

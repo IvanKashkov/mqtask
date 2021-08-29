@@ -17,9 +17,7 @@ namespace mqtask.WebApi
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-
                     var snapshot = new DbSnapshotBuilder().Build(); // this method call is less than 50 ms
-                    snapshot.Prepare(); // here we do some additional stuff in order to have optimized responses.
                     DbSnapshotHolder.Init(snapshot); // just store in memory our db snapshot
                 });
     }

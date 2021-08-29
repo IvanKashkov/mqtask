@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using mqtask.Domain.Entities;
+using mqtask.Domain.Services;
 using mqtask.Persistence.Interfaces;
 
 namespace mqtask.Persistence
@@ -17,9 +19,9 @@ namespace mqtask.Persistence
             Byte[] bytes = File.ReadAllBytes("geobase.dat");
 
             // 2. Read meta information
-            int index = 0;
-            index += 44;
-            var records = ReadUInt32(bytes, index); index += 16;
+            int index = 44;
+            int records = ReadInt32(bytes, index);
+            index += 16;
 
             var ranges = new IpRange[records];
             var locations = new Location[records];
@@ -34,31 +36,31 @@ namespace mqtask.Persistence
                 ranges[i] = new IpRange(from, to, locationIndex);
             }
 
-            // 4. Read locations
+            // 4. Read Locations
             for (uint i = 0; i < records; i++)
             {
-                var country = ReadString(bytes, index, 8); index += 8;
-                var region = ReadString(bytes, index, 12); index += 12;
-                var postal = ReadString(bytes, index, 12); index += 12;
-                var city = ReadString(bytes, index, 24); index += 24;
-                var organization = ReadString(bytes, index, 32); index += 32;
-
-                var latitude = BitConverter.ToSingle(new ReadOnlySpan<byte>(bytes, index, 4)); index += 4;
-                var longitude = BitConverter.ToSingle(new ReadOnlySpan<byte>(bytes, index, 4)); index += 4;
-
-                locations[i] = new Location(country, region, postal, city, organization, latitude, longitude);
+                int byteIndex = index;
+                index += 32;
+                var city = ReadString(bytes, index, AsciiZeroCharacterSearcher.IndexOf(new ReadOnlySpan<byte>(bytes, index, 24)));
+                index += 64;
+                locations[i] = new Location(byteIndex, city);
             }
 
-            // 5. Read location indexes.
-            var locationIndexes = new int[records];
+            // 5. Read Location indexes.
+            var locationIndexes = new uint[records];
 
             for (uint i = 0; i < records; i++)
             {
-                locationIndexes[i] = ReadInt32(bytes, index) / 96; index += 4;
+                locationIndexes[i] = ReadUInt32(bytes, index) / 96;
+                index += 4;
             }
+
+            var locationsDictionary = locations.GroupBy(x => x.City).ToDictionary(x => x.Key, x => x.ToList());
 
             // 6. Return DbSnapshot
-            return new DbSnapshot(ranges, locations, locationIndexes);
+            var result = new DbSnapshot(bytes, ranges, locations, locationIndexes, locationsDictionary);
+
+            return result;
         }
 
         private int ReadInt32(byte[] bytes, int index)
@@ -73,8 +75,6 @@ namespace mqtask.Persistence
 
         private string ReadString(byte[] bytes, int index, int length)
         {
-
-            // We have file in ASCII format. And Encoding.ASCII.GetString() works faster than BitConverter.ToString()
             return Encoding.ASCII.GetString(bytes, index, length);
         }
 
