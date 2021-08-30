@@ -44,9 +44,11 @@ function findByCity() {
 function buildTable(locations) {
     let rows = "";
 
-    if (locations) {
+    if (locations != null) {
         for (let location of locations) {
-            rows += buildTr(location);
+            if (location != null) {
+                rows += buildTr(location);
+            }
         }
     }
 
