@@ -46,6 +46,9 @@ namespace mqtask.WebApi
             {
                 options.Level = CompressionLevel.Fastest;
             });
+
+
+            services.AddResponseCaching();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,7 +56,21 @@ namespace mqtask.WebApi
         {
             app.UseCors("Default");
             app.UseResponseCompression();
-            
+
+            app.UseResponseCaching();
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                {
+                    Public = true,
+                    MaxAge = TimeSpan.FromDays(1)
+                };
+                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] = new string[] { "Accept-Encoding" };
+
+                await next();
+            });
+
             app.Map("/ip/location", x =>
             {
                 x.Run(context =>
