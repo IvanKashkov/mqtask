@@ -11,21 +11,19 @@ namespace mqtask.Application.Commands
         {
             if (string.IsNullOrEmpty(result.Country))
             {
-                var country = Encoding.ASCII.GetString(dbSnapshot.GeoBaseBytes, result.OriginalByteArrIndex,
-                    AsciiZeroCharacterSearcher.IndexOf(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, result.OriginalByteArrIndex, 8)));
+                int index = result.OriginalByteArrIndex;
 
-                var region = Encoding.ASCII.GetString(dbSnapshot.GeoBaseBytes, result.OriginalByteArrIndex,
-                    AsciiZeroCharacterSearcher.IndexOf(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, result.OriginalByteArrIndex + 8, 12)));
-
-                var postal = Encoding.ASCII.GetString(dbSnapshot.GeoBaseBytes, result.OriginalByteArrIndex,
-                    AsciiZeroCharacterSearcher.IndexOf(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, result.OriginalByteArrIndex + 20, 12)));
-
-                var organization = Encoding.ASCII.GetString(dbSnapshot.GeoBaseBytes, result.OriginalByteArrIndex,
-                    AsciiZeroCharacterSearcher.IndexOf(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, result.OriginalByteArrIndex + 56, 32)));
-
-                var latitude = BitConverter.ToSingle(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, result.OriginalByteArrIndex + 60, 4));
-                
-                var longitude = BitConverter.ToSingle(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, result.OriginalByteArrIndex + 64, 4));
+                var country = Encoding.ASCII.GetString(dbSnapshot.GeoBaseBytes, index, AsciiZeroCharacterSearcher.IndexOf(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, index, 8)));
+                index += 8;
+                var region = Encoding.ASCII.GetString(dbSnapshot.GeoBaseBytes, index, AsciiZeroCharacterSearcher.IndexOf(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, index, 12)));
+                index += 12;
+                var postal = Encoding.ASCII.GetString(dbSnapshot.GeoBaseBytes, index, AsciiZeroCharacterSearcher.IndexOf(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, index, 12)));
+                index += 36; // 12 + 24 (City)
+                var organization = Encoding.ASCII.GetString(dbSnapshot.GeoBaseBytes, index, AsciiZeroCharacterSearcher.IndexOf(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, index, 32)));
+                index += 32;
+                var latitude = BitConverter.ToSingle(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, index, 4));
+                index += 4;
+                var longitude = BitConverter.ToSingle(new ReadOnlySpan<byte>(dbSnapshot.GeoBaseBytes, index, 4));
 
                 result.Update(country, region, postal, organization, latitude, longitude);
             }
