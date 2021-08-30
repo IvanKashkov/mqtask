@@ -55,10 +55,8 @@ namespace mqtask.Persistence
                 index += 4;
             }
 
-            var locationsLookup = locations.GroupBy(x => x.City).ToDictionary(x => x.Key, x => x.ToList());
-
             // 6. Return DbSnapshot
-            var result = new DbSnapshot(bytes, ranges, locations, locationIndexes, locationsLookup);
+            var result = new DbSnapshot(bytes, ranges, locations, locationIndexes);
 
             return result;
         }

@@ -8,14 +8,12 @@ namespace mqtask.Domain.Entities
         public DbSnapshot(byte[] geoBaseBytes,
             IpRange[] ranges, 
             Location[] locations, 
-            uint[] locationIndexes, 
-            Dictionary<String, List<Location>> locationsByCityLookup)
+            uint[] locationIndexes)
         {
             GeoBaseBytes = geoBaseBytes;
             IpRanges = ranges;
             Locations = locations;
             LocationIndexes = locationIndexes;
-            LocationsByCityLookup = locationsByCityLookup;
         }
 
         public IpRange[] IpRanges { get; }
@@ -23,8 +21,7 @@ namespace mqtask.Domain.Entities
         public uint[] LocationIndexes { get; }
 
         public byte[] GeoBaseBytes { get; }
-
-        // Dictionary is thread safe for read
-        public Dictionary<String, List<Location>> LocationsByCityLookup { get; }
+        
+        public Dictionary<String, List<Location>> LocationsByCityLookup { get; set; }
     }
 }
