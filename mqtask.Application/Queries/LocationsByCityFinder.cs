@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using mqtask.Domain.Entities;
+using mqtask.Domain.Services;
 using LocationInfoUpdater = mqtask.Application.Commands.LocationInfoUpdater;
 
 namespace mqtask.Application.Queries

@@ -55,13 +55,14 @@ function buildTable(locations) {
     return `<table class="table">
 <thead>
 <tr>
-<th scope="col">Organization</th>
-<th scope="col">Postal</th>
 <th scope="col">City</th>
-<th scope="col">Region</th>
-<th scope="col">Country</th>
 <th scope="col">Latitude</th>
 <th scope="col">Longitude</th>
+<th scope="col">Organization</th>
+<th scope="col">Postal</th>
+<th scope="col">Region</th>
+<th scope="col">Country</th>
+
 </tr>
 </thead>
 <tbody>${rows}</tbody>
@@ -70,13 +71,13 @@ function buildTable(locations) {
 
 function buildTr(location) {
     return `<tr>
-<td>${location.Organization}</td>
-<td>${location.Postal}</td>
 <td>${location.City}</td>
-<td>${location.Region}</td>
-<td>${location.Country}</td>
 <td>${location.Latitude}</td>
 <td>${location.Longitude}</td>
+<td>${location.Organization}</td>
+<td>${location.Postal}</td>
+<td>${location.Region}</td>
+<td>${location.Country}</td>
 </tr>`;
 }
 

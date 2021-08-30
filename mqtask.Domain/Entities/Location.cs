@@ -1,4 +1,6 @@
-﻿namespace mqtask.Domain.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace mqtask.Domain.Entities
 {
     public record Location
     {
@@ -11,6 +13,7 @@
         /// <summary>
         /// Index in the byte array
         /// </summary>
+        [JsonIgnore]
         public int OriginalByteArrIndex { get; }
         public string City { get; }
 

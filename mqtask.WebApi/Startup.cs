@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.IO.Compression;
 using mqtask.Application;
 using Microsoft.AspNetCore.ResponseCompression;
 using mqtask.Application.Queries;
+using mqtask.Domain.Entities;
 
 namespace mqtask.WebApi
 {
@@ -46,9 +46,6 @@ namespace mqtask.WebApi
             {
                 options.Level = CompressionLevel.Fastest;
             });
-
-
-            services.AddResponseCaching();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,28 +54,15 @@ namespace mqtask.WebApi
             app.UseCors("Default");
             app.UseResponseCompression();
 
-            app.UseResponseCaching();
-
-            app.Use(async (context, next) =>
-            {
-                context.Response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
-                {
-                    Public = true,
-                    MaxAge = TimeSpan.FromDays(1)
-                };
-                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] = new string[] { "Accept-Encoding" };
-
-                await next();
-            });
-
             app.Map("/ip/location", x =>
             {
                 x.Run(context =>
                 {
                     string ip = context.Request.Query["ip"];
-                    var result = LocationByIpFinder.Find(DbSnapshotHolder.Instance, ip);
                     context.Response.ContentType = "application/json";
-                    return context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(result));
+                    Location location = LocationByIpFinder.Find(DbSnapshotHolder.Instance, ip);
+                    var json = System.Text.Json.JsonSerializer.Serialize(location);
+                    return context.Response.WriteAsync(json);
                 });
             });
 
@@ -87,9 +71,10 @@ namespace mqtask.WebApi
                 x.Run(context =>
                 {
                     string city = context.Request.Query["city"];
-                    var result = LocationsByCityFinder.Find(DbSnapshotHolder.Instance, city);
                     context.Response.ContentType = "application/json";
-                    return context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(result));
+                    var result = LocationsByCityFinder.Find(DbSnapshotHolder.Instance, city);
+                    var json = System.Text.Json.JsonSerializer.Serialize(result);
+                    return context.Response.WriteAsync(json);
                 });
             });
         }
