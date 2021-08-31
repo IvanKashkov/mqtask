@@ -61,22 +61,22 @@ namespace mqtask.Persistence
             return result;
         }
 
-        private int ReadInt32(byte[] bytes, int index)
+        public static int ReadInt32(byte[] bytes, int index)
         {
             return BitConverter.ToInt32(new ReadOnlySpan<byte>(bytes, index, 4));
         }
 
-        private uint ReadUInt32(byte[] bytes, int index)
+        public static uint ReadUInt32(byte[] bytes, int index)
         {
             return BitConverter.ToUInt32(new ReadOnlySpan<byte>(bytes, index, 4));
         }
 
-        private string ReadString(byte[] bytes, int index, int length)
+        public static string ReadString(byte[] bytes, int index, int length)
         {
             return Encoding.ASCII.GetString(bytes, index, length);
         }
 
-        private ulong ReadUInt64(byte[] bytes, int index)
+        public static ulong ReadUInt64(byte[] bytes, int index)
         {
             return BitConverter.ToUInt64(new ReadOnlySpan<byte>(bytes, index, 8));
         }
