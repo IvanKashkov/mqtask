@@ -7,7 +7,7 @@ using mqtask.UnitTests.Base;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace mqtask.UnitTests.DbSnapshot
+namespace mqtask.UnitTests.Current
 {
     [SimpleJob(RuntimeMoniker.Net50, targetCount: 10)]
     [RPlotExporter]
