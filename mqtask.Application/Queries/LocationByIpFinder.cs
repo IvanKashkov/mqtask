@@ -9,15 +9,12 @@ namespace mqtask.Application.Queries
         public static Location Find(DbSnapshot dbSnapshot, string ip)
         {
             var value = IpConverter.ConvertFromIpAddressToInteger(ip);
-            var arr = dbSnapshot.IpRanges;
 
-            IpRange range = BinarySearch(arr, value);
-
+            IpRange? range = BinarySearch(dbSnapshot.IpRanges, value);
+            
             if (range != null)
             {
-                uint locationIndex = dbSnapshot.LocationIndexes[range.LocationIndex];
-                Location result = dbSnapshot.Locations[locationIndex];
-
+                Location result = dbSnapshot.Locations[range.Value.LocationIndex];
                 LocationInfoUpdater.Update(result, dbSnapshot);
 
                 return result;
@@ -26,7 +23,7 @@ namespace mqtask.Application.Queries
             return null;
         }
 
-        private static IpRange BinarySearch(IpRange[] arr, uint value)
+        private static IpRange? BinarySearch(IpRange[] arr, uint value)
         {
             var left = 0;
             var right = arr.Length - 1;
@@ -34,16 +31,14 @@ namespace mqtask.Application.Queries
 
             while (left <= right)
             {
-                index = left + (right - left) / 2;
-
-                if (arr[index].IpFrom <= value && value <= arr[index].IpTo)
-                    return arr[index];
+                index = (right + left) / 2;
 
                 if (value > arr[index].IpTo)
                     left = index + 1;
-
-                if (value < arr[index].IpFrom)
+                else if (value < arr[index].IpFrom)
                     right = index - 1;
+                else
+                    return arr[index];
             }
 
             return null;

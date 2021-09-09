@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Hosting;
+using System.Threading;
 using Microsoft.Extensions.Hosting;
 using mqtask.Application;
 using mqtask.Persistence;

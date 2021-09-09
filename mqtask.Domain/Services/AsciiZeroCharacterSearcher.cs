@@ -8,12 +8,11 @@ namespace mqtask.Domain.Services
         {
             var left = 0;
             var right = span.Length - 1;
-            int index;
             int firstZero = 0;
 
             while (left <= right)
             {
-                index = left + (right - left) / 2;
+                var index = (right + left) / 2;
 
                 if (span[index] == 0)
                 {

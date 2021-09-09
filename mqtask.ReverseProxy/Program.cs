@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Yarp.ReverseProxy.LoadBalancing;
 
 namespace mqtask.ReverseProxy
 {

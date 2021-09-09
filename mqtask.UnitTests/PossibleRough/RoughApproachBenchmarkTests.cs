@@ -10,7 +10,7 @@ using mqtask.UnitTests.Base;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace mqtask.UnitTests.Rough
+namespace mqtask.UnitTests.PossibleRough
 {
     [SimpleJob(RuntimeMoniker.Net50, targetCount: 10)]
     [RPlotExporter]
@@ -88,7 +88,6 @@ namespace mqtask.UnitTests.Rough
 
             return 0;
         }
-
     }
 
     public class RoughApproachBenchmarkTests : BaseUnitTest

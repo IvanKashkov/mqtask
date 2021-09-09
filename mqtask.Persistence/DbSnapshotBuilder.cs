@@ -21,10 +21,23 @@ namespace mqtask.Persistence
             // 2. Read meta information
             int index = 44;
             int records = ReadInt32(bytes, index);
-            index += 16;
+            index += 4;
+            int offset_ranges = DbSnapshotBuilder.ReadInt32(bytes, index);
+            index += 4;
+            int offset_cities = DbSnapshotBuilder.ReadInt32(bytes, index);
+            index += 4;
+            int offset_locations = DbSnapshotBuilder.ReadInt32(bytes, index);
+            index += 4;
 
             var ranges = new IpRange[records];
             var locations = new Location[records];
+            var locationIndexes = new uint[records];
+
+            for (uint i = 0; i < records; i++)
+            {
+                locationIndexes[i] = ReadUInt32(bytes, offset_cities) / 96;
+                offset_cities += 4;
+            }
 
             // 3. Read IpRanges
             for (uint i = 0; i < records; i++)
@@ -33,7 +46,9 @@ namespace mqtask.Persistence
                 var to = ReadUInt32(bytes, index); index += 4;
                 var locationIndex = ReadUInt32(bytes, index); index += 4;
 
-                ranges[i] = new IpRange(from, to, locationIndex);
+                var finalIndex = locationIndexes[locationIndex];
+
+                ranges[i] = new IpRange(from, to, finalIndex);
             }
 
             // 4. Read Locations
@@ -47,16 +62,9 @@ namespace mqtask.Persistence
             }
 
             // 5. Read Location indexes.
-            var locationIndexes = new uint[records];
-
-            for (uint i = 0; i < records; i++)
-            {
-                locationIndexes[i] = ReadUInt32(bytes, index) / 96;
-                index += 4;
-            }
 
             // 6. Return DbSnapshot
-            var result = new DbSnapshot(bytes, ranges, locations, locationIndexes);
+            var result = new DbSnapshot(bytes, ranges, locations);
 
             return result;
         }
